@@ -17,6 +17,47 @@ If you need to download terraform , then click here [Terraform](https://www.terr
 
 Lets create a file for declaring the variables.This is used to declare the variables that pass values through the terrafrom.tfvars file.
 
+## Creating backend point S3 bucket to store tfstate file - backendS3.tf
+
+~~~
+terraform {
+  backend "s3" {
+    bucket = "terraform-snp" (s3 bucket name)
+    key    = "state/terraform.tfstate" (location to store the state file)
+    region = "ap-south-1"
+  }
+}
+~~~
+
+### Can use below bucket policy 
+
+~~~
+
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::terraform-sanoop" (ARN value of created bucket)
+        },
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::terraform-sanoop/state/terraform.tfstate"
+        }
+    ]
+}
+
+~~~
+
+
 ## Create a varriable.tf file
 
 ~~~
@@ -63,7 +104,7 @@ provider "aws" {
 
 ~~~
 data "aws_route53_zone" "selected" {
-  name         = "????"
+  name         = "sanoopannangatt.tech"
   private_zone = false
 }
 
@@ -93,6 +134,12 @@ chkconfig httpd on
 
 ~~~
 terraform init
+
+or use 
+
+This is because, we have to provide required authentication for AWS to initialise all.
+
+terraform init -backend-config="access_key=<key_value>" -backend-config="secret_key=<key_value>"
 ~~~
 
 **Lets start with main.tf file, the details are below**
@@ -231,7 +278,7 @@ resource "aws_lb_listener_rule" "rule-one" {
   }
   condition {
     host_header {
-      values = [ "${var.project}.sanudas.online" ]
+      values = [ "${var.project}.sanoopannangatt.tech" ]
      }
   }
 }
