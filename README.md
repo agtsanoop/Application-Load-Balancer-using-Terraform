@@ -137,9 +137,11 @@ terraform init
 
 or use 
 
+terraform init -backend-config="access_key=<key_value>" -backend-config="secret_key=<key_value>"
+
+
 This is because, we have to provide required authentication for AWS to initialise all.
 
-terraform init -backend-config="access_key=<key_value>" -backend-config="secret_key=<key_value>"
 ~~~
 
 **Lets start with main.tf file, the details are below**
